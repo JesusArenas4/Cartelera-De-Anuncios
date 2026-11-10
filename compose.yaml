@@ -1,0 +1,44 @@
+services:
+  # Base de datos para publicaciones-service
+  publicaciones-db:
+    image: postgres:15-alpine
+    container_name: publicaciones-db
+    environment:
+      POSTGRES_DB: publicaciones_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - publicaciones-data:/var/lib/postgresql/data
+
+  # Base de datos para moderacion-service
+  moderacion-db:
+    image: postgres:15-alpine
+    container_name: moderacion-db
+    environment:
+      POSTGRES_DB: moderacion_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      # Puerto 5433 en la máquina host para no chocar con la otra BD
+      - "5433:5432"
+    volumes:
+      - moderacion-data:/var/lib/postgresql/data
+
+  # Corredor de mensajes
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq-broker
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      # Puerto de comunicación para los servicios Spring Boot
+      - "5672:5672"
+      # Puerto del panel de administración web
+      - "15672:15672"
+
+volumes:
+  publicaciones-data:
+  moderacion-data:
